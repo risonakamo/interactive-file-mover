@@ -6,14 +6,22 @@ use std::path::PathBuf;
 #[derive(Debug)]
 struct TargetItem
 {
+    /// full path of item
     pub path:PathBuf,
-    pub parent:String
+
+    /// name of parent folder relative to the original search folder (not path)
+    pub parent:String,
+
+    /// name of item
+    pub itemName:String
 }
 
 fn main()
 {
     let res=search_mp3s(
-        "C:\\Users\\ktkm2\\Desktop\\song jobs\\songs 2023-06-28\\todo".to_string(),false);
+        "C:\\Users\\ktkm2\\Desktop\\song jobs\\songs 2023-06-28\\todo".to_string(),
+        false
+    );
 
     for item in res
     {
@@ -26,7 +34,7 @@ fn main()
 /// search for mp3s, except for ones that are in folders with certain names
 fn search_mp3s(target_dir:String,include_maybe:bool)->Vec<TargetItem>
 {
-    return glob((target_dir+"\\**\\*.mp3").as_str()).unwrap()
+    return glob((target_dir.clone()+"\\**\\*.mp3").as_str()).unwrap()
     .filter_map(|itemResult|->Option<TargetItem> {
         let item:PathBuf=itemResult.unwrap();
 
@@ -44,9 +52,18 @@ fn search_mp3s(target_dir:String,include_maybe:bool)->Vec<TargetItem>
             return None;
         }
 
+        let parentPath:String=parent
+            .strip_prefix(&target_dir).unwrap()
+            .to_path_buf()
+            .to_str().unwrap()
+            .to_string();
+
+        let itemName:String=item.file_name().unwrap().to_str().unwrap().to_string();
+
         return Some(TargetItem {
             path:item,
-            parent:parentStem
+            parent:parentPath,
+            itemName:itemName
         });
     })
     .collect();
