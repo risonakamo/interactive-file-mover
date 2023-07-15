@@ -5,7 +5,10 @@ mod types;
 
 use warp::Filter;
 
+use crate::mp3_search::search_mp3s;
+
 use crate::types::api::SearchMp3Request;
+use crate::types::types::TargetItem;
 
 #[tokio::main]
 async fn main()
@@ -26,12 +29,17 @@ async fn main()
             return "huh";
         });
 
+    // search path for mp3s. return target items list
     let searchMp3s=warp::path!("search-mp3")
         .and(warp::post())
         .and(warp::body::json())
         .map(|searchMp3Request:SearchMp3Request| {
-            println!("hello {:?}",searchMp3Request);
-            return "huh2";
+            let result:Vec<TargetItem>=search_mp3s(
+                searchMp3Request.searchPath,
+                searchMp3Request.includeMaybe
+            );
+
+            return warp::reply::json(&result);
         });
 
     let routes=root
