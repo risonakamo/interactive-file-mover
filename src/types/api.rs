@@ -15,3 +15,9 @@ pub struct SubmitItemsRequest
 {
     pub items:Vec<TargetItem>
 }
+
+#[derive(Debug,Serialize)]
+pub struct ServerError
+{
+    pub detail:String
+}

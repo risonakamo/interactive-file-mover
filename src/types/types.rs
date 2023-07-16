@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use serde::{Serialize,Deserialize};
 
-#[derive(Debug)]
+#[derive(Debug,Serialize)]
 pub enum Mp3MoveTag
 {
     none,
@@ -32,15 +32,17 @@ pub struct TargetItem
 }
 
 /// item with tag states
-#[derive(Debug)]
+#[derive(Debug,Serialize)]
 pub struct TaggableItem
 {
     pub item:TargetItem,
 
-    pub moveAction:Mp3MoveAction
+    pub moveAction:Mp3MoveAction,
+
+    pub previewPath:Option<PathBuf>
 }
 
-#[derive(Debug)]
+#[derive(Debug,Serialize)]
 pub struct Mp3MoveAction
 {
     pub moveType:Mp3MoveTag
@@ -50,5 +52,9 @@ pub struct Mp3MoveAction
 pub struct ServerState
 {
     pub tagItems:Vec<TaggableItem>,
-    pub phase:ServerPhase
+    pub phase:ServerPhase,
+
+    pub currentTagItem:usize,
+
+    pub previewDir:PathBuf
 }
