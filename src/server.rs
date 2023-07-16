@@ -38,11 +38,6 @@ async fn main()
             warp::http::Method::GET
         ]);
 
-    let root=warp::get()
-        .map(|| {
-            return "huh";
-        });
-
     // search path for mp3s. return target items list
     // returns list of target items as json
     let searchMp3s=warp::path!("search-mp3")
@@ -96,9 +91,13 @@ async fn main()
             );
         });
 
-    let routes=root
-        .or(searchMp3s)
+    let fileroute=warp::path!("test")
+        .and(warp::get())
+        .and(warp::fs::file("C:\\Users\\ktkm2\\Desktop\\song jobs\\songs 2023-06-28\\todo\\Do It Yourself!! THEME SONGS mp3\\y\\02.続く話.mp3"));
+
+    let routes=searchMp3s
         .or(submitItems)
+        .or(fileroute)
         .with(warp::log("warp"))
         .with(cors);
 
