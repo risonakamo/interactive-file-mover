@@ -44,6 +44,7 @@ async fn main()
         });
 
     // search path for mp3s. return target items list
+    // returns list of target items as json
     let searchMp3s=warp::path!("search-mp3")
         .and(warp::post())
         .and(warp::body::json())
@@ -57,6 +58,8 @@ async fn main()
         });
 
     // submit items to update state
+    // returns single text string
+    // errors are also text string
     let submitItems=warp::path!("submit-items")
         .and(warp::post())
         .and(warp::body::json())
@@ -72,6 +75,8 @@ async fn main()
                 );
             }
 
+            println!("got {} items",submitItemsReq.items.len());
+
             state.tagItems=submitItemsReq.items.into_iter()
                 .map(|item:TargetItem|->TaggableItem {
                     return TaggableItem {
@@ -82,6 +87,8 @@ async fn main()
                     };
                 })
                 .collect();
+
+            state.phase=ServerPhase::TAG;
 
             return with_status(
                 "success".to_string(),
