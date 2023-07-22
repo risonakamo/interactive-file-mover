@@ -118,8 +118,12 @@ async fn main()
                 );
             }
 
-            let currentItem:&mut TaggableItem=state.tagItems[state.currentTagItem];
-            currentItem.initialisePreview(state.previewDir);
+            let currentTagItemIndex:usize=state.currentTagItem;
+            let previewDir=state.previewDir.clone();
+
+            state.tagItems[currentTagItemIndex].initialisePreview(&previewDir);
+
+            let currentItem=&mut state.tagItems[currentTagItemIndex];
 
             return with_status(
                 warp::reply::json(&currentItem),
