@@ -1,4 +1,4 @@
-use std::{path::PathBuf, fs::copy};
+use std::{path::PathBuf,fs::{copy,canonicalize}};
 
 use crate::types::types::{TaggableItem, TargetItem, Mp3MoveAction, Mp3MoveTag};
 
@@ -37,7 +37,14 @@ fn makePreviewCopy(itemPath:&PathBuf,previewsDir:&PathBuf)->PathBuf
 {
     let previewItemPath:PathBuf=previewsDir.join(itemPath.file_name().unwrap());
 
+    if previewItemPath.is_file()
+    {
+        println!("preview already exists, skipping");
+        return canonicalize(previewItemPath).unwrap();
+    }
+
+    println!("making copy of {:?}",itemPath);
     copy(&itemPath,&previewItemPath).unwrap();
 
-    return previewItemPath;
+    return canonicalize(previewItemPath).unwrap();
 }

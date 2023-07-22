@@ -7,6 +7,7 @@ mod taggable_item;
 
 use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
+use std::fs::create_dir_all;
 
 use warp::Filter;
 use warp::hyper::StatusCode;
@@ -15,13 +16,14 @@ use warp::reply::with_status;
 use crate::mp3_search::search_mp3s;
 
 use crate::types::api::{SearchMp3Request, SubmitItemsRequest, ServerError};
-use crate::types::types::{TargetItem, ServerState, TaggableItem, Mp3MoveAction, Mp3MoveTag, ServerPhase};
+use crate::types::types::{TargetItem, ServerState, TaggableItem,Mp3MoveAction,Mp3MoveTag,ServerPhase};
 
 #[tokio::main]
 async fn main()
 {
     pretty_env_logger::init();
 
+    create_dir_all("./previews").unwrap();
     let stateArc=Arc::new(Mutex::new(ServerState {
         tagItems:vec![],
         phase:ServerPhase::ID,
@@ -96,7 +98,7 @@ async fn main()
         .and(warp::get())
         .and(stateFilter.clone())
         .map(|stateArc2:Arc<Mutex<ServerState>>| {
-            let mut state=stateArc2.lock().unwrap();
+            let mut state=stateArc2.lock().expect("huh");
 
             if state.phase!=ServerPhase::TAG
             {
